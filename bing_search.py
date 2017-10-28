@@ -70,7 +70,6 @@ def make_img_path2(save_dir_path, i, N, num_imgs_per_transaction):
 def download_image(url, timeout=10):
     # print("downloading..."+url)
     response = requests.get(url, allow_redirects=True, timeout=timeout)
-    print(str(response.status_code))
     if response.status_code != 200:
         error = Exception("HTTP status: " + response.status_code)
         raise error
@@ -88,6 +87,7 @@ def save_image(filename, image):
         fout.write(image)
 
 def cropFace(save_base_dir, path, imsize, method):
+    print("Start Cropping Face...")
     cropped_img_path = os.path.join(save_base_dir, 'Cropped')
     dir = cropped_img_path
     if not (os.path.exists(dir)):
@@ -115,6 +115,7 @@ def cropFace(save_base_dir, path, imsize, method):
             resizeImg = cv2.resize(cropImg, (imsize, imsize))
             filename = dir + '/' + p[:-4] + '_' + str(num + 1) + '.tif'
             cv2.imwrite(filename, resizeImg)
+            print("face cropped: " + filename)
 
 if __name__ == "__main__":
     
@@ -126,7 +127,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     # Set Yout Apikey
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:

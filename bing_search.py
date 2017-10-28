@@ -95,7 +95,12 @@ def cropFace(save_base_dir, path, imsize, method):
     original_img_path = os.path.join(save_base_dir, 'Original')
     for p in path:
         img = cv2.imread(original_img_path + '/' + p)
-        gImg = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        try:
+            gImg = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        except Exception as err:
+            # print("[Errno {0}] {1}".format(err.errno, err.strerror))
+            continue
+
         if method == 1:
             face_cascade = cv2.CascadeClassifier('/usr/local/opt/opencv/share/OpenCV/haarcascades/haarcascade_frontalface_default.xml')
         elif method == 2:
@@ -120,8 +125,8 @@ if __name__ == "__main__":
     ap.add_argument('--method', '-m', type=int, default=1, help='Specify Method Flag (1 : Haarcascades Frontalface Default, 2 : Haarcascades Frontalface Alt1, 3 : Haarcascades Frontalface Alt2, Without : Haarcascades Frontalface Alt Tree)')
     args = ap.parse_args()
 
-    # Set Your API Key
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    # Set Yout Apikey
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:

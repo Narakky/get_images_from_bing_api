@@ -127,7 +127,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     # Set Yout Apikey
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:
@@ -158,7 +158,6 @@ if __name__ == "__main__":
         num_imgs_per_transaction = 150 # default 30, Max 150
         offset_count = math.floor(num_imgs_required / num_imgs_per_transaction)
 
-        url_list = []
         correspondence_table = {}
 
         headers = {
@@ -169,6 +168,7 @@ if __name__ == "__main__":
         }
 
         for offset in range(offset_count):
+            url_list = []
 
             params = urllib.parse.urlencode({
                 # Request parameters

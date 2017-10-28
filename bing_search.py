@@ -126,7 +126,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     # Set Yout Apikey
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:

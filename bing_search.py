@@ -126,7 +126,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     # Set Yout Apikey
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:
@@ -225,11 +225,11 @@ if __name__ == "__main__":
                 except Exception as err:
                     print("%s" % (err))
 
-            save_image_dir_path = save_dir_path + '/imgs'
-            cropFace(save_image_dir_path, os.listdir(save_image_dir_path + '/Original'), args.imsize, args.method)
+        save_image_dir_path = save_dir_path + '/imgs'
+        cropFace(save_image_dir_path, os.listdir(save_image_dir_path + '/Original'), args.imsize, args.method)
 
-            correspondence_table_path = os.path.join(save_dir_path, 'corr_table')
-            make_dir(correspondence_table_path)
+        correspondence_table_path = os.path.join(save_dir_path, 'corr_table')
+        make_dir(correspondence_table_path)
 
-            with open(os.path.join(correspondence_table_path, 'corr_table.json'), mode='w') as f:
-                json.dump(correspondence_table, f)
+        with open(os.path.join(correspondence_table_path, 'corr_table.json'), mode='w') as f:
+            json.dump(correspondence_table, f)

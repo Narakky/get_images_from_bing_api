@@ -5,6 +5,7 @@ import subprocess as cmd
 import http.client
 import json
 import re
+import cv2
 import requests
 import os
 import math
@@ -54,10 +55,8 @@ def make_img_path(save_dir_path, url):
 def make_img_path2(save_dir_path, i, N, num_imgs_per_transaction):
     save_img_path = os.path.join(save_dir_path, 'imgs')
     original_img_path = os.path.join(save_img_path, 'Original')
-    cropped_img_path = os.path.join(save_img_path, 'Cropped')
     make_dir(save_img_path)
     make_dir(original_img_path)
-    make_dir(cropped_img_path)
 
     #パスと拡張子に分割(例;http://~~/img1.txt=>http://~~/img+.txt)
     file_extenxion = os.path.splitext(url)[-1]
@@ -69,7 +68,7 @@ def make_img_path2(save_dir_path, i, N, num_imgs_per_transaction):
         raise ValueError('Not applicable file extension')
 
 def download_image(url, timeout=10):
-    print("downloading..."+url)
+    # print("downloading..."+url)
     response = requests.get(url, allow_redirects=True, timeout=timeout)
     print(str(response.status_code))
     if response.status_code != 200:
@@ -88,6 +87,29 @@ def save_image(filename, image):
     with open(filename, "wb") as fout:
         fout.write(image)
 
+def cropFace(save_base_dir, path, imsize, method):
+    cropped_img_path = os.path.join(save_base_dir, 'Cropped')
+    dir = cropped_img_path
+    if not (os.path.exists(dir)):
+        os.mkdir(dir)
+    original_img_path = os.path.join(save_base_dir, 'Original')
+    for p in path:
+        img = cv2.imread(original_img_path + '/' + p)
+        gImg = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        if method == 1:
+            face_cascade = cv2.CascadeClassifier('/usr/local/opt/opencv/share/OpenCV/haarcascades/haarcascade_frontalface_default.xml')
+        elif method == 2:
+            face_cascade = cv2.CascadeClassifier('/usr/local/opt/opencv/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml')
+        elif method == 3:
+            face_cascade = cv2.CascadeClassifier('/usr/local/opt/opencv/share/OpenCV/haarcascades/haarcascade_frontalface_alt2.xml')
+        else:
+            face_cascade = cv2.CascadeClassifier('/usr/local/opt/opencv/share/OpenCV/haarcascades/haarcascade_frontalface_alt_tree.xml')
+        faces = face_cascade.detectMultiScale(gImg, 1.3, 5)
+        for num in range(len(faces)):
+            cropImg = copy.deepcopy(img[faces[num][1]:faces[num][1]+faces[num][3], faces[num][0]:faces[num][0]+faces[num][2]])
+            resizeImg = cv2.resize(cropImg, (imsize, imsize))
+            filename = dir + '/' + p[:-4] + '_' + str(num + 1) + '.tif'
+            cv2.imwrite(filename, resizeImg)
 
 if __name__ == "__main__":
     
@@ -98,8 +120,8 @@ if __name__ == "__main__":
     ap.add_argument('--method', '-m', type=int, default=1, help='Specify Method Flag (1 : Haarcascades Frontalface Default, 2 : Haarcascades Frontalface Alt1, 3 : Haarcascades Frontalface Alt2, Without : Haarcascades Frontalface Alt Tree)')
     args = ap.parse_args()
 
-    # set your api key
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    # Set Your API Key
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:
@@ -114,7 +136,7 @@ if __name__ == "__main__":
         # Add Current Directory (Exept for Absolute Path)
         if not (opbase[0] == psep):
             if (opbase.find('./') == -1):
-                mkdir('./output')
+                make_dir('./output')
                 opbase = './output/' + opbase
         # Create Opbase
         opbase = opbase + '_' + t[1] + t[2] + t[0] + '_' + t[4] + '_' + t[3].split(':')[0] + t[3].split(':')[1] + t[3].split(':')[2]
@@ -190,13 +212,16 @@ if __name__ == "__main__":
                     # img_path = make_img_path(save_dir_path, url)
                     img_path = make_img_path2(save_dir_path, i, offset, num_imgs_per_transaction)
                     image = download_image(url)
-                    print('image downloaded...{}'.format(url))
+                    # print('image downloaded...{}'.format(url))
                     save_image(img_path, image)
                     print('saved image... {}'.format(url))
                 except KeyboardInterrupt:
                     break
                 except Exception as err:
                     print("%s" % (err))
+
+            save_image_dir_path = save_dir_path + '/imgs'
+            cropFace(save_image_dir_path, os.listdir(save_image_dir_path + '/Original'), args.imsize, args.method)
 
             correspondence_table_path = os.path.join(save_dir_path, 'corr_table')
             make_dir(correspondence_table_path)

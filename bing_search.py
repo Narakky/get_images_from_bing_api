@@ -121,13 +121,14 @@ if __name__ == "__main__":
     
     ap = ArgumentParser(description='bing_search.py')
     ap.add_argument('--query', '-q', nargs='*', default='hoge', help='Specify Query of Image Collection ')
+    ap.add_argument('--offset', '-o', nargs='*', default=0, help='Api Start Offset Value')
     ap.add_argument('--suffix', '-s', nargs='*', default='jpg', help='Specify Image Suffix')
     ap.add_argument('--imsize', '-i', type=int, default=100, help='Specify Image Size of Crop Face Image')
     ap.add_argument('--method', '-m', type=int, default=1, help='Specify Method Flag (1 : Haarcascades Frontalface Default, 2 : Haarcascades Frontalface Alt1, 3 : Haarcascades Frontalface Alt2, Without : Haarcascades Frontalface Alt Tree)')
     args = ap.parse_args()
 
     # Set Yout Apikey
-    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    api_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     
     t = time.ctime().split(' ')
     if t.count('') == 1:
@@ -156,6 +157,7 @@ if __name__ == "__main__":
 
         num_imgs_required = 1000 # Number of images you want. The number to be divisible by 'num_imgs_per_transaction'
         num_imgs_per_transaction = 150 # default 30, Max 150
+        start_offset = int(args.offset[0])
         offset_count = math.floor(num_imgs_required / num_imgs_per_transaction)
 
         correspondence_table = {}
@@ -176,7 +178,7 @@ if __name__ == "__main__":
                 'q': q,
                 'mkt': 'ja-JP',
                 'count': num_imgs_per_transaction,
-                'offset': offset * num_imgs_per_transaction # increment offset by 'num_imgs_per_transaction' (for example 0, 150, 300)
+                'offset': (offset + start_offset) * num_imgs_per_transaction # increment offset by 'num_imgs_per_transaction' (for example 0, 150, 300)
             })
 
             try:
